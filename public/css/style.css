@@ -1,0 +1,100 @@
+:root{
+    --bs-dark: #16161D !important;
+    --bs-dark-t: #16161D90 !important;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-dark-t);
+}
+
+  /* Works on Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 5px;
+    
+}
+
+  *::-webkit-scrollbar-track {
+    background: #00000000;
+    
+}
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--bs-dark-t);
+    border-radius: 25px;
+    border: 1px solid white;
+    
+}
+
+textarea {
+    cursor: auto;
+}
+
+.btn{
+    border-radius: 2px;
+}
+
+.btn-dark{
+    background-color: var(--bs-dark);
+}
+
+.cat-libro{
+    min-height: 60px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.cat-libro,
+a.menu{
+    color: #e1e1e1;
+    font-family: inherit;
+    position: relative;
+    border: none;
+    background: none;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-duration: 400ms;
+    transition-property: color;
+}
+
+.cat-libro:focus,
+.cat-libro:hover,
+a.menu:focus,
+a.menu:hover {
+    color: #232323;
+}
+
+.cat-libro:focus:after,
+.cat-libro:hover:after,
+a.menu:focus:after,
+a.menu:hover:after {
+    width: 100%;
+    left: 0%;
+}
+
+.cat-libro:after,
+a.menu:after {
+    content: "";
+    pointer-events: none;
+    bottom: -5px;
+    left: 50%;
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    background-color: #232323;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-duration: 400ms;
+    transition-property: width, left;
+}
+
+
+#reseña{
+    /* max-height: 10vh; */
+    font-size: 13px;
+}
+
+@media (max-width: 991.98px) {
+    #reseña{
+        max-height: 200px;
+        overflow: auto;
+    }
+}
