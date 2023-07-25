@@ -34,6 +34,7 @@ class M_Libros extends Model
         `capítulo`.`ID` AS `capítuloID`,
         `capítulo`.`TÍTULO` AS `título`,
         `capítulo`.`ID_LIBRO` AS `libro`,
+        `capítulo`.`TEXTO` AS `body`,
         `capítulo`.`ARCHIVO_JSON` AS `archivo`
         FROM `t_libros_capítulos` AS capítulo
         ";
@@ -106,19 +107,19 @@ class M_Libros extends Model
         $file = str_replace([" ", "."], "_", $file).".json";
         $this->result['data']['file'] = $file;
         $filePath = './libros_json/' . $file;
-        if (fopen("$filePath", "w")) {
+        // if (fopen("$filePath", "w")) {
             $insert["ARCHIVO_JSON"] = $file;
             $builder = $this->db->table('t_libros_capítulos');
             
             if ($builder->insert($insert)) {
                 $this->result['data']['lastID'] = $this->db->insertID();
                 $this->result['msg'] = "Nuevo registro agregado.";
-                // $this->result['status'] = true;
+                $this->result['status'] = true;
             }else{
                 $this->result['status'] = false;
                 $this->result['error'] = $builder->getError();
             }
-        }
+        // }
         return $this->result; 
     }
     
@@ -126,14 +127,19 @@ class M_Libros extends Model
         $búsqueda = ($data['capítulo']) ? " WHERE `capítulo`.ID = '$data[capítulo]'" : "" ;
         $query = $this->db->query($this->QCapítulosDeLibro . $búsqueda);
         $result = $query->getRowArray();
-        if (isset($data['f']) && $data['f']) {
-            $body = json_decode(file_get_contents( base_url(). '/libros_json/'.$result['archivo']));
-            if ($body != null) {
-                $result['body'] = $body->body;
-            }else{
-                $result['body'] = "Sin texto.";
-            }
-        }
+        // REMOVIDO PARA AHCER CAMBIO A USO EXLUSIVO DE BD
+        // if (isset($data['f']) && $data['f']) {
+        //     helper('filesystem');
+        //     $file = new \CodeIgniter\Files\File('./libros_json/' . $result['archivo']);
+        //     $filePath = './libros_json/' . $result['archivo'];
+        //     $readFile = $file->openFile('r');
+        //     $body = json_decode($readFile);
+        //     if ($body != null) {
+        //         $result['body'] = $body->body;
+        //     }else{
+        //         $result['body'] = "Sin texto.";
+        //     }
+        // }
         return $result;
     }
     
@@ -142,8 +148,12 @@ class M_Libros extends Model
         $builder = $this->db->table('t_libros_capítulos');
         $builder->where('ID', $data['capítulo']);
             
-        if ( $data['título-f']) {
-            $update  = ['TÍTULO' => $data['título']];
+        // if ( $data['título-f']) {
+            $update  = [
+                'TÍTULO' => $data['título'],
+                'TEXTO' => $data['cuerpo']
+            ];
+            
             
             
             if ($builder->update($update)) {
@@ -156,26 +166,27 @@ class M_Libros extends Model
                 $this->result['alert'] = "alert-info";
                 $this->result['error'] = $builder->getError();
             }
-        }
+        // }
         
+        // REMOVIDO PARA AHCER CAMBIO A USO EXLUSIVO DE BD
         // Si hubo cambio en el contenido del capítulo
-        if ( $data['cuerpo-f']) {
+        // if ( $data['cuerpo-f']) {
             
-            $builder->select('ARCHIVO_JSON');
-            $querySelect = $builder->get()->getRow();
-            if (!empty($querySelect)) {
-                helper('filesystem');
-                $file = new \CodeIgniter\Files\File('./libros_json/' . $querySelect->ARCHIVO_JSON);
-                $filePath = './libros_json/' . $querySelect->ARCHIVO_JSON;
-                $writeToFile = $file->openFile('w');
-                write_file($filePath, json_encode(['body' => $data['cuerpo']]));
+        //     $builder->select('ARCHIVO_JSON');
+        //     $querySelect = $builder->get()->getRow();
+        //     if (!empty($querySelect)) {
+        //         helper('filesystem');
+        //         $file = new \CodeIgniter\Files\File('./libros_json/' . $querySelect->ARCHIVO_JSON);
+        //         $filePath = './libros_json/' . $querySelect->ARCHIVO_JSON;
+        //         $writeToFile = $file->openFile('w');
+        //         write_file($filePath, json_encode(['body' => $data['cuerpo']]));
                 
-                $this->result['data']['result'] = [$querySelect, $file->getSize()];
-                $this->result['alert'] = "alert-success";
-                $this->result['msg'] = "Registro actualizado.";
-                $this->cambioF = true;
-            }
-        }
+        //         $this->result['data']['result'] = [$querySelect, $file->getSize()];
+        //         $this->result['alert'] = "alert-success";
+        //         $this->result['msg'] = "Registro actualizado.";
+        //         $this->cambioF = true;
+        //     }
+        // }
         if (!$this->cambioF) {
             $this->result['msg'] = "No hubo cambios.";
             $this->result['alert'] = "alert-info";

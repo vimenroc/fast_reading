@@ -131,3 +131,4 @@ nb-configuration.xml
 
 # Libros
 libros_json/*
+app/Config/App.php

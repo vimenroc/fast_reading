@@ -26,8 +26,8 @@
             <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12"></div>
         </div>
         <div class="row">
-            <input type="number" id="título-f" name="título-f" class="d-none" value = 0>
-            <input type="number" id="cuerpo-f" name="cuerpo-f" class="d-none" value = 0>
+            <input type="number" id="título-f" name="título-f" class="d-none" value = 1>
+            <input type="number" id="cuerpo-f" name="cuerpo-f" class="d-none" value = 1>
         </div>
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12"></div>
