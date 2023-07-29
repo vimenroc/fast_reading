@@ -32,9 +32,10 @@ class M_Libros extends Model
     
     private $QCapítulosDeLibro = "SELECT
         `capítulo`.`ID` AS `capítuloID`,
+        `capítulo`.`NO_CAPÍTULO` AS `capítuloNo`,
         `capítulo`.`TÍTULO` AS `título`,
         `capítulo`.`ID_LIBRO` AS `libro`,
-        `capítulo`.`TEXTO` AS `body`,
+        IFNULL(`capítulo`.`TEXTO`,'SinTexto') AS `body`,
         `capítulo`.`ARCHIVO_JSON` AS `archivo`
         FROM `t_libros_capítulos` AS capítulo
         ";
@@ -55,6 +56,24 @@ class M_Libros extends Model
     // Sección de Libros
     /***********************************************************************************/
     
+    function VLibroCU($IDlibro = null){
+        if ($IDlibro) {
+            $data = [
+                'title' => "Cargando...",
+                'libro' => $IDlibro,
+                'método' => "U"
+            ];
+        }else{
+            $data = [
+                'title' => "Nuevo Libro",
+                'libro' => $IDlibro,
+                'método' => "C"
+            ];
+        }
+        
+        return $data;
+    }
+    
     public function JCatálogo($data){
         $búsquedaPorIdioma = ($data['idioma']) ? " WHERE `libroIdioma`.ID = '$data[idioma]'" : "" ;
         $query = $this->db->query($this->QCatálogoDeLibros . $búsquedaPorIdioma);
@@ -67,7 +86,7 @@ class M_Libros extends Model
         return $query->getRowArray();
     }
     
-    function JNuevo($data){
+    function JLibroCU($data){
         $insert = [
             'TÍTULO' => $data['título'],
             'RESEÑA' => $data['reseña'],
@@ -75,16 +94,32 @@ class M_Libros extends Model
         ];
         
         $builder = $this->db->table('t_libros');
+        switch ($data['método']) {
+            case null:
+            case 'C':
+                $f = $builder->insert($insert);
+                break;
+            case 'U':
+                $builder->where('ID', $data['libro']);
+                $f = $builder->update($insert);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
         
-        if ($builder->insert($insert)) {
+        if ($f) {
             $this->result['data']['lastID'] = $this->db->insertID();
             $this->result['msg'] = "Nuevo registro agregado.";
+            $this->result['status'] = true;
         }else{
             $this->result['status'] = false;
             $this->result['error'] = $builder->getError();
         }
         return $this->result;   
     }
+
     /***********************************************************************************/
     // Fin Sección de Libros
     /***********************************************************************************/
@@ -92,34 +127,72 @@ class M_Libros extends Model
     /***********************************************************************************/
     // Sección de capítulos
     /***********************************************************************************/
+    function VCapítuloCU($IDlibro = null, $IDcapítulo = null){
+        if ($IDcapítulo) {
+            $data = [
+                'title' => "Cargando...",
+                'libro' => $IDlibro,
+                'capítulo' => $IDcapítulo,
+                'método' => "U"
+            ];
+        }else{
+            $data = [
+                'title' => "Nuevo Libro",
+                'libro' => $IDlibro,
+                'capítulo' => null,
+                'método' => "C"
+            ];
+        }
+        
+        return $data;
+    }
+    
     public function JCapítulos($data){
-        $búsqueda = ($data['IDlibro']) ? " WHERE `capítulo`.ID_LIBRO = '$data[IDlibro]'" : "" ;
+        $búsqueda = ($data['IDlibro']) ? " WHERE `capítulo`.ID_LIBRO = '$data[IDlibro]' ORDER BY NO_CAPÍTULO" : "" ;
         $query = $this->db->query($this->QCapítulosDeLibro . $búsqueda);
         return $query->getResultArray();
     }
     
-    public function JCapítulosC($data){
+    public function JCapítuloCU($data){
         $insert = [
-            'TÍTULO' => $data['nuevo-título'],
-            'ID_LIBRO' => $data['IDlibro']
+            'TÍTULO' => $data['título'],
+            'ID_LIBRO' => $data['libro'],
+            'NO_CAPÍTULO' => $data['no-capítulo'],
+            'TEXTO' => $data['cuerpo'],
         ];
-        $file = microtime();
-        $file = str_replace([" ", "."], "_", $file).".json";
-        $this->result['data']['file'] = $file;
-        $filePath = './libros_json/' . $file;
-        // if (fopen("$filePath", "w")) {
-            $insert["ARCHIVO_JSON"] = $file;
-            $builder = $this->db->table('t_libros_capítulos');
+        // Depreciado; generar nombre de archivo para capítulos
+        // $file = microtime();
+        // $file = str_replace([" ", "."], "_", $file).".json";
+        // $this->result['data']['file'] = $file;
+        // $insert["ARCHIVO_JSON"] = $file;
+        
+        $builder = $this->db->table('t_libros_capítulos');
+        
+        switch ($data['método']) {
+            case null:
+            case 'C':
+                // $f = $builder->insert($insert);
+                break;
+            case 'U':
+                $builder->where('ID', $data['capítulo']);
+                $f = $builder->update($insert);
+                break;
             
-            if ($builder->insert($insert)) {
-                $this->result['data']['lastID'] = $this->db->insertID();
-                $this->result['msg'] = "Nuevo registro agregado.";
-                $this->result['status'] = true;
-            }else{
-                $this->result['status'] = false;
-                $this->result['error'] = $builder->getError();
-            }
-        // }
+            default:
+                # code...
+                break;
+        }
+        
+        if ($f) {
+            $this->result['data']['lastID'] = $this->db->insertID();
+            $this->result['msg'] = "Registro exitoso";
+            $this->result['status'] = true;
+            $this->result['alert'] = "success";
+        }else{
+            $this->result['status'] = false;
+            $this->result['error'] = $builder->getError();
+        }
+        
         return $this->result; 
     }
     

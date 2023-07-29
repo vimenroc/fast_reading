@@ -56,26 +56,31 @@ class C_Libros extends BaseController
     }
     
     
-    function VNuevo(){
-        $data = [
-            "title" => "Nuevo de Libro"
-        ];
+    // Función para cuando se agrega un nuevo libro o se edita la información de uno
+    // Ya que utilizan los mismos campos para agregar y editar, se usa una sola función
+    function VLibroCU($IDlibro = null){
+        $data = $this->M_Libros->VLibroCU($IDlibro);
         $data = ['data' => $data];
 
-        echo view('libros/v_nuevo', $data);
+        echo view('libros/v_libro_cu', $data);
         echo view('_main', $data);
     }
     
-    public function JNuevo(){
-        $request = request();
-        $request = $request->getPost();
-        echo json_encode( $this->M_Libros->JNuevo($request));
+    public function VLibroDetalles($IDlibro = null){
+        $data = [
+            "title" => "Cargando...",
+            "IDlibro" => $IDlibro
+        ];
+        $data = ['data' => $data];
+
+        echo view('libros/v_libro_detalles', $data);
+        echo view('_main', $data);
     }
     
-    // Función de prueba
-    public function GetBook($bookID){
-        $homepage = file_get_contents( base_url(). '/libros_json/hard_boiled.json');
-        echo $homepage;
+    public function JLibroCU(){
+        $request = request();
+        $request = $request->getPost();
+        echo json_encode($this->M_Libros->JLibroCU($request));
     }
     
     // Fución de prueba
@@ -90,46 +95,25 @@ class C_Libros extends BaseController
         echo view('_main', $data);
     }
     
-    function VCapítuloNuevo($IDlibro = null){
-        $data = [
-            "title" => "Libro",
-            "IDlibro" => $IDlibro
-        ];
+    function VCapítuloCU($IDlibro = null, $IDcapítulo = null){
+        $data = $this->M_Libros->VCapítuloCU($IDlibro, $IDcapítulo);
         $data = ['data' => $data];
         
-        echo view('libros/v_capítulo_nuevo', $data);
+        echo view('libros/v_capítulo_cu', $data);
         echo view('_main', $data);
     }
     
-    function VCapítuloDetalles($IDcapítulo = null){
-        $data = [
-            "title" => "Capítulo $IDcapítulo",
-            "IDcapítulo" => $IDcapítulo
-        ];
-        $data = ['data' => $data];
-        
-        echo view('libros/v_capítulo_detalles', $data);
-        echo view('_main', $data);
-    }
-    
-    function JCapítulosC(){
+    function JCapítuloCU(){
         $request = request();
         $request = $request->getPost();
         // echo json_encode($request);
-        echo json_encode( $this->M_Libros->JCapítulosC($request));
+        echo json_encode( $this->M_Libros->JCapítuloCU($request));
     }
     
     function JCapítuloDetalles(){
         $request = request();
         $request = $request->getPost();
         echo json_encode( $this->M_Libros->JCapítuloDetalles($request));
-    }
-    
-    function JCapítuloDetallesU(){
-        $request = request();
-        $request = $request->getPost();
-        // echo json_encode($request);
-        echo json_encode( $this->M_Libros->JCapítuloDetallesU($request));
     }
     
     function BuscarCapítulosPorLibro(){

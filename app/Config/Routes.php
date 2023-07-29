@@ -35,14 +35,15 @@ $routes->get('/', 'Home::index');
 // Apartado de libros
 
 // Libros CRUD
-$routes->get('libro/nuevo', 'C_Libros::VNuevo/');
-$routes->get('libros/nuevo', 'C_Libros::VNuevo/');
+$routes->get('libro/nuevo', 'C_Libros::VLibroCU/');
+$routes->get('libros/nuevo', 'C_Libros::VLibroCU/');
 
 // Libros - Capítulos
 $routes->get('libro/(:num)', 'C_Libros::VLibro/$1');
+$routes->get('libro/(:num)/detalles', 'C_Libros::VLibroCU/$1');
 $routes->get('libro/cap/(:num)', 'C_Libros::VCapítulo/$1');
-$routes->get('libro/cap/(:num)/detalles', 'C_Libros::VCapítuloDetalles/$1');
-$routes->get('libro/(:num)/cap/nuevo', 'C_Libros::VCapítuloNuevo/$1');
+$routes->get('libro/(:num)/cap/(:num)/detalles', 'C_Libros::VCapítuloCU/$1/$2');
+$routes->get('libro/(:num)/cap/nuevo', 'C_Libros::VCapítuloCU/$1');
 
 
 // Libros - Catálogo
@@ -53,12 +54,12 @@ $routes->get('libros/', 'C_Libros::VCatálogo/');
 $routes->post('b/libros/', 'C_Libros::JCatálogo');
 $routes->post('b/libro/', 'C_Libros::JLibro/');
 $routes->post('b/libro/caps', 'C_Libros::JCapítulos/');
-$routes->post('b/libro/caps/c', 'C_Libros::JCapítulosC/');
+$routes->post('b/libro/caps/cu', 'C_Libros::JCapítuloCU/');
 $routes->post('b/libro/cap/detalles', 'C_Libros::JCapítuloDetalles/');
 $routes->post('b/libro/cap/detalles/u', 'C_Libros::JCapítuloDetallesU/');
 $routes->post('b/libro/cap/detalles/d', 'C_Libros::JCapítuloDetallesD/');
 $routes->post('b/idiomas/', 'C_Idiomas::JCatálogo/');
-$routes->post('b/libros/nuevo', 'C_Libros::JNuevo/');
+$routes->post('b/libros/cu', 'C_Libros::JLibroCU/');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

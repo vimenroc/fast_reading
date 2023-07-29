@@ -11,12 +11,14 @@
         <button class="btn btn-primary btn-dark" id= "resume" ><i id="btn-icon" class="fa fa-play"></i></button>
         <button class="btn btn-primary btn-dark" id= "stop" ><i id="btn-icon" class="fa fa-stop"></i></button>
     </div>
-    <div class="col-12">
-        <div class="input-group mb-3 p-3" style="max-width: 250px; margin: auto">
-            <span class="input-group-text" id="basic-addon1">Velocidad</span>
-            <input type="number" class="form-control" placeholder="250" min="1" value="250" id="speed">
+    <div class="col-12 mt-3">
+        <div class="row">
+            <div class="col-lg-5 col-md-4 col-sm-3 col-4 form-text p-0 text-end"><label for="" id="palabras-segundo" class="col-form-label">(4 palabras/seg)</label></div>
+            <div class="col-lg-2 col-md-4 col-sm-6 col-4 ">
+                <input type="number" class="form-control form-control-sm" placeholder="250" min="1" value="250" id="speed">
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-3 col-4 form-text p-0 text-start"><label for="" class="col-form-label">milisegundos</label></div>
         </div>
-        
     </div>
     <div class="col-12">
         <label for="progreso" class="form-label" id="progreso-label">Progreso</label>
@@ -41,7 +43,7 @@
             var capítuloDaraUTL = "<?=base_url('b/libro/cap/detalles')?>";
             var capítuloDataArgs = {capítulo: <?= $data['IDcapítulo']?>, f:1};
             
-            CapítuloData(capítuloDaraUTL, capítuloDataArgs).then(function(data){
+            GetData(capítuloDaraUTL, capítuloDataArgs).then(function(data){
                 
                     arr1 = data.body.split(' ');
                     
@@ -64,6 +66,7 @@
                 $("#btn-icon").addClass("fa-play");
                 start = 0;
                 $("#texto").html("");
+                $("#progreso").val(0);
                 
             });
             
@@ -89,7 +92,14 @@
             running = false;
             var index = $(this).val();
             $("#texto").html(arr1[index-1]);
+            
             start = $(this).val();
+        });
+        
+        $("#speed").change(function(){
+            var WpS = 1000/$(this).val();
+            WpS = WpS.toFixed(1);
+            $("#palabras-segundo").text(`(${WpS} palabras/seg)`);
         });
         
         function PrepareReading(bodyString){

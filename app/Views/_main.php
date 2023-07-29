@@ -26,7 +26,7 @@
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+                            <a class="nav-link" aria-current="page" href="<?= base_url(); ?>">Inicio</a>
                         </li>
                         
                         <hr>
@@ -35,11 +35,11 @@
                                 <i class="fa fa-book"></i> Libros
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" href="<?php echo base_url('libros/nuevo'); ?>">Nuevo</a></li>
+                                <li><a class="dropdown-item" href="<?php echo base_url('libros/nuevo'); ?>"><i class="fa fa-plus"></i> Nuevo</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="#"><i class="fa fa-list"></i> Listado</a></li>
+                                <li><a class="dropdown-item" href="<?php echo base_url('libros/lista'); ?>"><i class="fa fa-list"></i> Listado</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -10,6 +10,18 @@ function LibroData(url, data){
     });
 };
 
+function GetData(url, data){
+    return $.ajax({
+        url: url,
+        type: "POST",
+        dataType: "json",
+        data: data,
+        beforeSend: function() {},
+        success: function(data) {},
+        error: function(error) {}
+    });
+}
+
 function Guardar(url, formData, button = null){
     var alerta = $("#alerta");
     console.log(formData);
@@ -31,9 +43,9 @@ function Guardar(url, formData, button = null){
                 alerta.addClass("alert-success");
                 alerta.text(data.msg);
                 alerta.show();
-                setTimeout(function(){
-                    location.reload();
-                }, 3000);
+                // setTimeout(function(){
+                //     location.reload();
+                // }, 3000);
             }else{
                 alerta.addClass("alert-danger");
                 alerta.text(data.msg);
@@ -53,16 +65,4 @@ function ControlesFinal(elementos){
             controlesContenedor.append(element);
         });
     }
-}
-
-function CapítuloData(url, data){
-    return $.ajax({
-        url: url,
-        type: "POST",
-        dataType: "json",
-        data: data,
-        beforeSend: function() {},
-        success: function(data) {},
-        error: function(error) {}
-    });
 }

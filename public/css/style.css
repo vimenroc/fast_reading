@@ -3,26 +3,27 @@
     --bs-dark-t: #16161D90 !important;
 }
 
-* {
+*{
     scrollbar-width: thin;
     scrollbar-color: var(--bs-dark-t);
 }
 
   /* Works on Chrome, Edge, and Safari */
-  *::-webkit-scrollbar {
+*::-webkit-scrollbar {
     width: 5px;
     
 }
 
-  *::-webkit-scrollbar-track {
-    background: #00000000;
+*::-webkit-scrollbar-track {
+    background: var(--bs-dark-t);
+    
     
 }
 
-  *::-webkit-scrollbar-thumb {
-    background-color: var(--bs-dark-t);
+*::-webkit-scrollbar-thumb {
+    background-color: white;
     border-radius: 25px;
-    border: 1px solid white;
+    border: 1px solid var(--bs-dark-t);
     
 }
 
