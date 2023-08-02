@@ -64,7 +64,7 @@
                 formData.append('capítulo', capítulo);
                 formData.append('libro', libro);
                 formData.append('método', método);
-                Guardar(url ,formData);
+                Guardar(url ,formData, $("#guardar"));
             });
         });
         

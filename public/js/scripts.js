@@ -24,6 +24,7 @@ function GetData(url, data){
 
 function Guardar(url, formData, button = null){
     var alerta = $("#alerta");
+    var botónTexto = "";
     console.log(formData);
     $.ajax({
         url: url,
@@ -35,6 +36,8 @@ function Guardar(url, formData, button = null){
         beforeSend: function() {
             if (button != null) {
                 button.prop("disabled", true);
+                botónTexto = button.text();
+                button.html(`<i class="fa fa-spinner fa-pulse"></i>`);
             } 
         },
         success: function(data) {
@@ -52,6 +55,12 @@ function Guardar(url, formData, button = null){
                 alerta.show();
             }
         },
+        complete: function(error) {
+            if (button != null) {
+                button.prop("disabled", false);
+                button.html(botónTexto);
+            }
+        },
         error: function(error) {}
     });
     
@@ -61,7 +70,6 @@ function ControlesFinal(elementos){
     var controlesContenedor = $("#controles-final");
     if (elementos) {
         elementos.forEach(element => {
-            console.log(element);
             controlesContenedor.append(element);
         });
     }

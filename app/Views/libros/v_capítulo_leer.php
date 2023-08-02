@@ -13,11 +13,19 @@
     </div>
     <div class="col-12 mt-3">
         <div class="row">
-            <div class="col-lg-5 col-md-4 col-sm-3 col-4 form-text p-0 text-end"><label for="" id="palabras-segundo" class="col-form-label">(4 palabras/seg)</label></div>
-            <div class="col-lg-2 col-md-4 col-sm-6 col-4 ">
-                <input type="number" class="form-control form-control-sm" placeholder="250" min="1" value="250" id="speed">
+            
+            <div class="col-12 text-center">
+                Velocidad:
             </div>
-            <div class="col-lg-5 col-md-4 col-sm-3 col-4 form-text p-0 text-start"><label for="" class="col-form-label">milisegundos</label></div>
+            <div class="col-12">
+                <input type="number" class="form-control form-control-sm m-auto"  min="1" value="200" id="wpm" style="max-width: 70px">
+            </div>
+            <div class="col-12 text-center">
+                Palabras por minuto
+            </div>
+            <div id="new-word" class="col-12 text-center text-sm text-muted" style="font-size: 0.7rem;">
+                Nueva palabra cada 0.3 segundos
+            </div>
         </div>
     </div>
     <div class="col-12">
@@ -35,7 +43,7 @@
         
         let running = false;
         let start = 0;
-        let speed = 250;
+        let wpm = 250;
         
         // A $( document ).ready() block.
         $( document ).ready(function() {
@@ -72,7 +80,8 @@
             
             $("#resume").click(function(e){
                 e.preventDefault();
-                speed = $("#speed").val();
+                wpm = 60*1000/$("#wpm").val();
+                console.log(wpm);
                 if (running == true) {
                     $("#btn-icon").removeClass("fa-pause");
                     $("#btn-icon").addClass("fa-play");
@@ -81,7 +90,7 @@
                     running = true;
                     $("#btn-icon").removeClass("fa-play");
                     $("#btn-icon").addClass("fa-pause");
-                    demo(speed);
+                    demo(wpm);
                 }
             });
             
@@ -96,10 +105,9 @@
             start = $(this).val();
         });
         
-        $("#speed").change(function(){
-            var WpS = 1000/$(this).val();
-            WpS = WpS.toFixed(1);
-            $("#palabras-segundo").text(`(${WpS} palabras/seg)`);
+        $("#wpm").change(function(){
+            var tiempo = 60/$(this).val();
+            $("#new-word").text(`Nueva palabra cada ${tiempo} segundos`);
         });
         
         function PrepareReading(bodyString){
@@ -112,12 +120,12 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        async function demo(speed) {
+        async function demo(wpm) {
             for (let i = start; i < arr1.length && running; i++) {
                 $("#texto").html(arr1[i]);
                 start = i;
                 $('#progreso[type=range]').val(i+1);
-                await sleep(speed);
+                await sleep(wpm);
             }
         }
         
