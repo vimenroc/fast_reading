@@ -53,7 +53,7 @@
             
             GetData(capítuloDaraUTL, capítuloDataArgs).then(function(data){
                 
-                    arr1 = data.body.split(' ');
+                    arr1 = PrepareReading(data.body);
                     
                     var botónRegresar = $("<a></a>").addClass("btn btn-dark").html("<i class='fas fa-arrow-left'></i> Regresar").attr("href", "<?= base_url('libro/')?>"+data.libro);
                     ControlesFinal([botónRegresar]);
@@ -112,6 +112,9 @@
         
         function PrepareReading(bodyString){
             var bodyArray;
+            bodyString = bodyString.replace(/\t/g, " ");
+            bodyString = bodyString.replace(/\r/g, " ");
+            bodyString = bodyString.replace(/\n/g, " ");
             bodyArray = bodyString.split(' ');
             return bodyArray;
         };
