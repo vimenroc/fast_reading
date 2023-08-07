@@ -36,7 +36,7 @@
             let método = "U";
             let backURL = "<?= base_url('libro/')?>"+libro;
         <?php }else{
-            echo "let libro = null; let capítulo = null; let método = 'C'; let backURL = '".base_url('libros')."'";
+            echo "let libro =  $data[libro]; let capítulo = null; let método = 'C'; let backURL = '".base_url('libros')."'";
         } ?>
         
         $( document ).ready(function() {
@@ -51,8 +51,7 @@
                     $('#título').val(data.título);
                     $('#no-capítulo').val(data.capítuloNo);
                     $('#cuerpo').val(data.body);
-                    var botónRegresar = $("<a></a>").addClass("btn btn-dark").html("<i class='fas fa-arrow-left'></i> Regresar").attr("href", "<?= base_url('libro/')?>"+data.libro);
-                    ControlesFinal([botónRegresar]);
+                    
                 });
             }
             
@@ -66,6 +65,9 @@
                 formData.append('método', método);
                 Guardar(url ,formData, $("#guardar"));
             });
+            
+            var botónRegresar = $("<a></a>").addClass("btn btn-dark").html("<i class='fas fa-arrow-left'></i> Regresar").attr("href", "<?= base_url('libro/')?>"+libro);
+            ControlesFinal([botónRegresar]);
         });
         
 

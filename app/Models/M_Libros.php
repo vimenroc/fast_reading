@@ -171,7 +171,7 @@ class M_Libros extends Model
         switch ($data['método']) {
             case null:
             case 'C':
-                // $f = $builder->insert($insert);
+                $f = $builder->insert($insert);
                 break;
             case 'U':
                 $builder->where('ID', $data['capítulo']);
