@@ -61,6 +61,7 @@ writable/uploads/*
 !writable/uploads/index.html
 
 writable/debugbar/*
+!writable/debugbar/.gitkeep
 
 php_errors.log
 
@@ -125,13 +126,3 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
-#-------------------------
-# Archivos Generados pro el Sistema
-#-------------------------
-
-# Libros
-libros_json/*
-app/Config/App.php
-app/Config/Database.php
-app/Config/App.php
-app/Config/App.php

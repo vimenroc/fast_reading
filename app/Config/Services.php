@@ -29,9 +29,4 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
-    public static function plates(string $view, array $data = null, string $path = __DIR__ .'Views'){
-        $templates = \League\Plates\Engine::create($path);
-
-        return $templates->render($view, $data);
-    }
 }
