@@ -69,9 +69,22 @@ class M_Libros extends Model
     }
     
     public function JCatálogo($data){
+        $respuesta = new E_Respuesta();
+        $respuesta->status = true;
+
         $búsquedaPorIdioma = ($data['idioma']) ? " WHERE `libroIdioma`.ID = '$data[idioma]'" : "" ;
         $query = $this->db->query($this->QLibro . $búsquedaPorIdioma);
-        return $query->getResultArray();
+
+        $respuesta->data = $query->getResultArray();
+        if ($respuesta->data) {
+            $respuesta->msg = "Libros encontrados.";
+            $respuesta->alert = "success";
+        }else{
+            $respuesta->msg = "No hay resultados.";
+            $respuesta->alert = "info";
+        }
+
+        return $respuesta;
     }
     
     function JLibro($data){

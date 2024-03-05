@@ -44,26 +44,18 @@
     
     function CargarLibros(){
         let idioma = $("#idioma").val();
-        $.ajax({
-            url: "<?= base_url('b/libros'); ?>",
-            type: "POST",
-            data:{'idioma':idioma},
-            dataType: "json",
-            beforeSend: function() {
-                $("#cat-libros").html('Cargando...');
-            },
-            success: function(data) {
-                console.log(data);
-                $("#cat-libros").html('');
-                if (data) {
-                    data.forEach(element => {
-                        let libro = ComponenteLibro('<?= base_url("libro/")?>'+element.libroID, element.libroTítulo, element.libroReseña, element.libroPortada);
-                        $("#cat-libros").append(libro);
-                    });
-                }
-                
-            },
-            error: function(error) {}
+        let cargarLibrosURL = "<?= base_url('b/libros'); ?>";
+        let cargarLibrosData = {'idioma':idioma};
+
+
+        GetData(cargarLibrosURL, cargarLibrosData).then(respuesta => {
+            $("#cat-libros").html('');
+            if (respuesta) {
+                respuesta.data.forEach(element => {
+                    let libro = ComponenteLibro('<?= base_url("libro/")?>'+element.libroID, element.libroTítulo, element.libroReseña, element.libroPortada);
+                    $("#cat-libros").append(libro);
+                });
+            }
         });
     }
     
@@ -76,7 +68,6 @@
             beforeSend: function() {
             },
             success: function(data) {
-                console.log(data);
                 if (data) {
                     $("#idioma").html(`<option value=0>Todos los idiomas</option>`);
                     data.forEach(element => {
