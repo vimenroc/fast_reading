@@ -1,5 +1,6 @@
+<?= $this->extend('layouts/main') ?>
 
-<?php function Contenido($data){ ?>
+<?= $this->section('container') ?>
 <div class="row">
     <div  class="col-12 text-center mb-5 mt-5">
         <h2 id="cabecera">
@@ -34,13 +35,13 @@
 <div class="row mt-5 p-3" id="cat-libros">
 
 </div>
-<?php }?>
+<?= $this->endSection() ?>
 
-<?php function Scripts($data){?>
+<?= $this->section('scripts') ?>
     <script src="<?= base_url("public/js/scripts.js");?>"></script>
     <script>
-        <?php if ($data['libro']){ ?>
-            let libro = <?= $data['libro'] ?>;
+        <?php if ($libro){ ?>
+            let libro = <?= $libro ?>;
             let método = "U";
             let backURL = "<?= base_url('libro/')?>"+libro;
         <?php }else{
@@ -110,4 +111,4 @@
         });
     }
 </script>
-<?php }?>
+<?= $this->endSection() ?>

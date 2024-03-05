@@ -16,9 +16,11 @@ El nombre por defecto es `fast_reading`, pero puede llamarse como quieran (Solo 
 
 Por defecto se ha ignorado el archivo `.env`, y dentro de la carpeta viene una copia llamada `_.env`la cual basta con cambiar de nombre para que funcione como es debido.
 
+Mover/copiar `index.php` de ./public/ a la carpeta raíz del proyecto.
+
 ## Info
 
-El proyecto usa COde Igniter 4 como su framework, con el ligero cambio que `index.php` desde un inicio no está siendo usado en las rutas.
+El proyecto usa Code Igniter 4 como su framework, con el ligero cambio que `index.php` desde un inicio no está siendo usado en las rutas.
 
 ## Server Requirements
 

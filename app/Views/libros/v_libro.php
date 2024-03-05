@@ -1,33 +1,50 @@
-<?php function Contenido($data){ ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('container') ?>
     <div class="row">
         <div  class="col-12 text-center mb-5 mt-5">
             <h2 id="título">
                 <i class="fa fa-spinner fa-pulse fa-fw"></i> Cargando...
             </h2>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-12 "></div>
-        <div class="col-lg-6 col-md-6 col-sm-12 h5">
-            Reseña
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-12"></div>
-    </div>
-    <div class="row">
-        <div class="col-lg-3 col-md-2 col-sm-1 "></div>
-        <div class="col-lg-6 col-md-8 col-sm-10 mt-2 mb-5" id="reseña">
-            <i class="fa fa-spinner fa-pulse fa-fw"></i> Cargando...
-            
-        </div>
-        <div class="col-lg-3 col-md-2 col-sm-1 "></div>
-            
         
     </div>
     <div class="row">
+        <div class="col-lg-8 col-md-8 col-12 m-auto">
+            <div class="row">
+                <div class="col-lg-2 col-12 text-center mb-3" id="portada">
+                    <i class="fa fa-spinner fa-pulse fa-fw"></i> Cargando...
+                </div>
+                <div class="col-lg-10 col-12 mb-3" id="reseña">
+                    <i class="fa fa-spinner fa-pulse fa-fw"></i> Cargando...
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <div class="row">
+    <div class="col-lg-8 col-md-8 col-12 m-auto">
+            <div class="row">
+                <div class="col-lg-2 col-12 text-center mb-3">
+                    
+                </div>
+                <div class="col-lg-10 col-12 mb-3">
+                    <button id="favorito" class="btn btn-dark w-25"><i class="fa-regular fa-star"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-3"></div>
         <div class="col-6 p-0">
-            <a class="btn btn-dark w-100" href="<?= base_url("/libro/$data[IDlibro]/cap/nuevo");?>">Nuevo</a>
+            <a class="btn btn-dark w-100" href="<?= base_url("/libro/$libroID/cap/nuevo");?>">Nuevo</a>
         </div>
         <div class="col-3"></div>
     </div>
+
     <div class="row">
         <div class="col-lg-3 col-md-2 col-sm-12 col-1"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 col-10 ">
@@ -37,28 +54,59 @@
         </div>
         <div class="col-lg-3 col-md-2 col-sm-12 col-1"></div>
     </div>
-<?php }?>
+    <?= $this->endSection() ?>
 
-<?php function Scripts($data){ ?>
+<?= $this->section('scripts') ?>
     <script src="<?= base_url("public/js/scripts.js");?>"></script>
     <script>    
-        let libro = <?= $data['IDlibro'] ?>;
-        
+        let libro = <?= $libroID ?>;
+        let favoritosURL = "";
+        let favoritosData = {
+            libroID : <?= $libroID ?>,
+            usuarioID : <?= $usuarioID ?>,
+        };
+
         // A $( document ).ready() block.
         $( document ).ready(function() {
             console.log();
-            LibroData("<?= base_url('b/libro');?>",{IDlibro : libro}).then(data => {
-                if (data) {
+            LibroData("<?= base_url('b/libro');?>",{IDlibro : libro}).then(response => {
+                if (response.data) {
                     var edit = $("<a>").attr("href", `<?= base_url("libro/");?>${libro}/detalles`).html(" <i class='fas fa-edit'></i>").addClass("text-dark text-decoration-none");
-                    $("#título").html(data.título).append(edit);
-                    data.reseña = data.reseña.replace(/\n/g, "<br>");    
-                    $("#reseña").html(data.reseña);
+                    $("#título").html(response.data.libroTítulo).append(edit);
+                    response.data.libroReseña = response.data.libroReseña.replace(/\n/g, "<br>");    
+                    $("#reseña").html(response.data.libroReseña);
+                    let portada = $("<img>").attr("src", response.data.libroPortada).addClass("img-fluid").css("max-height", "300px");
+                    $("#portada").html(portada);
                 }
             });
             LibroCapítulos();
+            RevisarFavoritos();
+            ModificarFavorito();
         });
         
+        function RevisarFavoritos(){
+            let revisarFavoritosURL = `<?= base_url("b/libros/favoritos/revisar");?>`;
+            GetData(revisarFavoritosURL, favoritosData, {alerta: false}).then(response => {
+                if (response.data) {
+                    favoritosURL = `<?= base_url("b/libros/favoritos/eliminar")?>`;
+                    $("#favorito").html(`<i class="fa-solid fa-star"></i> ${response.msg}`);
+                }else{
+                    favoritosURL = `<?= base_url("b/libros/favoritos/agregar")?>`;
+                    $("#favorito").html(`<i class="fa-regular fa-star"></i> ${response.msg}`);
+                }
+            });
+        };
         
+        function ModificarFavorito(){
+            $("#favorito").on('click', function (e){
+                e.preventDefault();
+                console.log("favs");
+                GetData(favoritosURL, favoritosData, {alerta: false}).then(response => {
+                    RevisarFavoritos();
+                });
+            });
+        }
+
         function LibroCapítulos(){
             $.ajax({
                 url: `<?= base_url("b/libro/caps");?>`,
@@ -83,4 +131,4 @@
         };
         
     </script>
-<?php }?>
+    <?= $this->endSection() ?>

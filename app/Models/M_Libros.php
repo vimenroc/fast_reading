@@ -22,14 +22,6 @@ class M_Libros extends Model
         'alert' => '',
     ];
     
-    private $QCatálogoDeLibros = "SELECT
-	    libroIdioma.IDIOMA AS idioma,
-        libro.`TÍTULO` AS `título`,
-        libro.ID AS 'libroID'
-        FROM t_libros AS libro
-        INNER JOIN cat_idiomas AS libroIdioma ON libroIdioma.ID = libro.ID_IDIOMA
-        ";
-    
     private $QCapítulosDeLibro = "SELECT
         `capítulo`.`ID` AS `capítuloID`,
         `capítulo`.`NO_CAPÍTULO` AS `capítuloNo`,
@@ -37,15 +29,17 @@ class M_Libros extends Model
         `capítulo`.`ID_LIBRO` AS `libro`,
         IFNULL(`capítulo`.`TEXTO`,'SinTexto') AS `body`,
         `capítulo`.`ARCHIVO_JSON` AS `archivo`
-        FROM `t_libros_capítulos` AS capítulo
+        FROM `fastreading_t_libros_capítulos` AS capítulo
         ";
     
     private $QLibro = "SELECT
-        libro.`TÍTULO` AS `título`,
-        libro.`RESEÑA` AS `reseña`,
-        libroIdioma.IDIOMA AS idioma
-        FROM `t_libros` AS libro
-        INNER JOIN cat_idiomas AS libroIdioma ON libroIdioma.ID = libro.ID_IDIOMA
+        libro.`TÍTULO` AS `libroTítulo`,
+        libro.`ID` AS `libroID`,
+        libro.`PORTADA_URL` AS `libroPortada`,
+        libro.`RESEÑA` AS `libroReseña`,
+        libroIdioma.IDIOMA AS libroIdioma
+        FROM `fastreading_t_libros` AS libro
+        INNER JOIN fastreading_cat_idiomas AS libroIdioma ON libroIdioma.ID = libro.ID_IDIOMA
         ";
     
     public function __construct() {       
@@ -76,14 +70,23 @@ class M_Libros extends Model
     
     public function JCatálogo($data){
         $búsquedaPorIdioma = ($data['idioma']) ? " WHERE `libroIdioma`.ID = '$data[idioma]'" : "" ;
-        $query = $this->db->query($this->QCatálogoDeLibros . $búsquedaPorIdioma);
+        $query = $this->db->query($this->QLibro . $búsquedaPorIdioma);
         return $query->getResultArray();
     }
     
     function JLibro($data){
+        // Si viene un ID de libro, se busca ese libro. Si no, se buscan todos los libros.
+        $respuesta = new E_Respuesta();
+        $respuesta->status = true;
+
         $búsqueda = ($data['IDlibro']) ? " WHERE libro.ID = '$data[IDlibro]'" : "" ;
         $query = $this->db->query($this->QLibro . $búsqueda);
-        return $query->getRowArray();
+
+        $respuesta->data = $query->getRowArray();
+        $respuesta->msg = "Libro encontrado.";
+        $respuesta->alert = "success";
+        
+        return $respuesta;
     }
     
     function JLibroCU($data){
@@ -93,7 +96,7 @@ class M_Libros extends Model
             'ID_IDIOMA' => $data['idioma']
         ];
         
-        $builder = $this->db->table('t_libros');
+        $builder = $this->db->table('fastreading_t_libros');
         switch ($data['método']) {
             case null:
             case 'C':
@@ -103,15 +106,84 @@ class M_Libros extends Model
                 $builder->where('ID', $data['libro']);
                 $f = $builder->update($insert);
                 break;
-            
-            default:
-                # code...
-                break;
+            default:break;
         }
         
         if ($f) {
             $this->result['data']['lastID'] = $this->db->insertID();
             $this->result['msg'] = "Nuevo registro agregado.";
+            $this->result['status'] = true;
+        }else{
+            $this->result['status'] = false;
+            $this->result['error'] = $builder->getError();
+        }
+        return $this->result;   
+    }
+
+
+    function JRevisarFavoritos($data){
+        $respuesta = new E_Respuesta();
+        $respuesta->status = true;
+
+        $builder = $this->db->table('fastreading_r_usuarios_libros_favoritos');
+        $builder->select('ID_LIBRO');
+        $builder->where('ID_LIBRO', $data['libroID']);
+        $builder->where('ID_USUARIO', $data['usuarioID']);
+        
+        $f = $builder->get();
+        $respuesta->data = $f->getRowArray();
+        if ($respuesta->data) {
+            $respuesta->msg = "En favoritos";
+        }else{
+            $respuesta->msg = "Agregar a favoritos";
+        }
+
+        return $respuesta;
+    }
+
+    // Libros favoritos de usuario
+    function JFavoritos($data){
+        $respuesta = new E_Respuesta();
+        $ID_USUARIO = $data['usuarioID'];
+        $búsqueda = "INNER JOIN fastreading_r_usuarios_libros_favoritos as favoritos ON favoritos.ID_LIBRO = libro.ID
+            WHERE favoritos.ID_USUARIO = $ID_USUARIO";
+        $query = $this->db->query($this->QLibro . $búsqueda);
+        $respuesta->data = $query->getResultArray();
+        $respuesta->status = true;
+        if ($respuesta->data) {
+            $respuesta->msg = "Libros encontrados.";
+            $respuesta->alert = "success";
+        }else{
+            $respuesta->msg = "No se encontraron libros favoritos.";
+        }
+        return $respuesta;
+    }
+
+    function JFavoritosCD($data){
+        $insert = [
+            'ID_USUARIO' => $data['usuarioID'],
+            'ID_LIBRO' => $data['libroID'],
+        ];
+        
+        $builder = $this->db->table('fastreading_r_usuarios_libros_favoritos');
+        switch ($data['método']) {
+            case null:
+            case 'C':
+                $f = $builder->insert($insert);
+                $this->result['msg'] = "Nuevo registro agregado.";
+                $this->result['data']['lastID'] = $this->db->insertID();
+                break;
+            case 'D':
+                $builder->where('ID_LIBRO', $data['libroID']);
+                $builder->where('ID_USUARIO', $data['usuarioID']);
+                $f = $builder->delete();
+                $this->result['msg'] = "Registro eliminado.";
+                break;
+            default:break;
+        }
+        
+        if ($f) {
+            
             $this->result['status'] = true;
         }else{
             $this->result['status'] = false;
@@ -160,13 +232,8 @@ class M_Libros extends Model
             'NO_CAPÍTULO' => $data['no-capítulo'],
             'TEXTO' => $data['cuerpo'],
         ];
-        // Depreciado; generar nombre de archivo para capítulos
-        // $file = microtime();
-        // $file = str_replace([" ", "."], "_", $file).".json";
-        // $this->result['data']['file'] = $file;
-        // $insert["ARCHIVO_JSON"] = $file;
         
-        $builder = $this->db->table('t_libros_capítulos');
+        $builder = $this->db->table('fastreading_t_libros_capítulos');
         
         switch ($data['método']) {
             case null:
@@ -200,19 +267,6 @@ class M_Libros extends Model
         $búsqueda = ($data['capítulo']) ? " WHERE `capítulo`.ID = '$data[capítulo]'" : "" ;
         $query = $this->db->query($this->QCapítulosDeLibro . $búsqueda);
         $result = $query->getRowArray();
-        // REMOVIDO PARA AHCER CAMBIO A USO EXLUSIVO DE BD
-        // if (isset($data['f']) && $data['f']) {
-        //     helper('filesystem');
-        //     $file = new \CodeIgniter\Files\File('./libros_json/' . $result['archivo']);
-        //     $filePath = './libros_json/' . $result['archivo'];
-        //     $readFile = $file->openFile('r');
-        //     $body = json_decode($readFile);
-        //     if ($body != null) {
-        //         $result['body'] = $body->body;
-        //     }else{
-        //         $result['body'] = "Sin texto.";
-        //     }
-        // }
         return $result;
     }
     
@@ -221,45 +275,27 @@ class M_Libros extends Model
         $builder = $this->db->table('t_libros_capítulos');
         $builder->where('ID', $data['capítulo']);
             
-        // if ( $data['título-f']) {
-            $update  = [
-                'TÍTULO' => $data['título'],
-                'TEXTO' => $data['cuerpo']
-            ];
-            
-            
-            
-            if ($builder->update($update)) {
-                $this->result['data']['lastID'] = $this->db->insertID();
-                $this->result['alert'] = "alert-success";
-                $this->result['msg'] = "Registro actualizado.";
-                $this->cambioF = true;
-            }else{
-                $this->result['status'] = false;
-                $this->result['alert'] = "alert-info";
-                $this->result['error'] = $builder->getError();
-            }
-        // }
         
-        // REMOVIDO PARA AHCER CAMBIO A USO EXLUSIVO DE BD
-        // Si hubo cambio en el contenido del capítulo
-        // if ( $data['cuerpo-f']) {
-            
-        //     $builder->select('ARCHIVO_JSON');
-        //     $querySelect = $builder->get()->getRow();
-        //     if (!empty($querySelect)) {
-        //         helper('filesystem');
-        //         $file = new \CodeIgniter\Files\File('./libros_json/' . $querySelect->ARCHIVO_JSON);
-        //         $filePath = './libros_json/' . $querySelect->ARCHIVO_JSON;
-        //         $writeToFile = $file->openFile('w');
-        //         write_file($filePath, json_encode(['body' => $data['cuerpo']]));
-                
-        //         $this->result['data']['result'] = [$querySelect, $file->getSize()];
-        //         $this->result['alert'] = "alert-success";
-        //         $this->result['msg'] = "Registro actualizado.";
-        //         $this->cambioF = true;
-        //     }
-        // }
+        $update  = [
+            'TÍTULO' => $data['título'],
+            'TEXTO' => $data['cuerpo']
+        ];
+        
+        
+        
+        if ($builder->update($update)) {
+            $this->result['data']['lastID'] = $this->db->insertID();
+            $this->result['alert'] = "alert-success";
+            $this->result['msg'] = "Registro actualizado.";
+            $this->cambioF = true;
+        }else{
+            $this->result['status'] = false;
+            $this->result['alert'] = "alert-info";
+            $this->result['error'] = $builder->getError();
+        }
+        
+        
+
         if (!$this->cambioF) {
             $this->result['msg'] = "No hubo cambios.";
             $this->result['alert'] = "alert-info";

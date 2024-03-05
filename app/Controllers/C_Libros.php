@@ -10,6 +10,8 @@ class C_Libros extends BaseController
         $this->M_Libros = new M_Libros();
         
     }
+
+    // VISTAS
     
     public function index()
     {
@@ -20,50 +22,51 @@ class C_Libros extends BaseController
         $data = [
             "title" => "Catálogo de Libros"
         ];
-        $data = ['data' => $data];
 
-        echo view('libros/v_catálogo', $data);
-        echo view('_main', $data);
+        return view('libros/v_catálogo', $data);
     }
     
-    public function JCatálogo(){
-        $request = request();
-        $request = $request->getPost();
-        echo json_encode( $this->M_Libros->JCatálogo($request));
-    }
-    
-    public function VLibro($IDlibro = null){
+    public function VLibro($libroID = null){
+        $session = session();
+        $usuario = $session->get('usuario');
+        if ($usuario) {
+            $usuarioID = $usuario->userID;
+        }else{
+            $usuarioID = null;
+        }
+        
         $data = [
             "title" => "Catálogo de Libros",
-            "IDlibro" => $IDlibro
+            "libroID" => $libroID, 
+            "usuarioID" => $usuarioID,
         ];
-        $data = ['data' => $data];
 
-        echo view('libros/v_libro', $data);
-        echo view('_main', $data);
+        return view('libros/v_libro', $data);
     }
     
-    public function JLibro(){
-        $request = request();
-        $request = $request->getPost();
-        echo json_encode( $this->M_Libros->JLibro($request));
+    function VFavoritos(){
+        $session = session();
+        $usuario = $session->get('usuario');
+        if ($usuario) {
+            $usuarioID = $usuario->userID;
+        }else{
+            $usuarioID = null;
+            $session->setFlashdata('error', 'Debes iniciar sesión para ver tus favoritos');
+            return redirect()->to(base_url('/'));
+        }
+        $data = [
+            "title" => "Favoritos",
+            "usuarioID" => $usuarioID,
+        ];
+        // print_r($data['usuario']);
+        return view('libros/v_favoritos', $data);
     }
-    
-    public function JCapítulos(){
-        $request = request();
-        $request = $request->getPost();
-        echo json_encode( $this->M_Libros->JCapítulos($request));
-    }
-    
     
     // Función para cuando se agrega un nuevo libro o se edita la información de uno
     // Ya que utilizan los mismos campos para agregar y editar, se usa una sola función
     function VLibroCU($IDlibro = null){
         $data = $this->M_Libros->VLibroCU($IDlibro);
-        $data = ['data' => $data];
-
-        echo view('libros/v_libro_cu', $data);
-        echo view('_main', $data);
+        return view('libros/v_libro_cu', $data);
     }
     
     public function VLibroDetalles($IDlibro = null){
@@ -71,10 +74,25 @@ class C_Libros extends BaseController
             "title" => "Cargando...",
             "IDlibro" => $IDlibro
         ];
-        $data = ['data' => $data];
-
+        
         echo view('libros/v_libro_detalles', $data);
         echo view('_main', $data);
+    }
+
+    // FIN DE VISTAS
+    // BACK END
+
+
+    public function JCatálogo(){
+        $request = request();
+        $request = $request->getPost();
+        echo json_encode( $this->M_Libros->JCatálogo($request));
+    }
+
+    public function JLibro(){
+        $request = request();
+        $request = $request->getPost();
+        echo json_encode( $this->M_Libros->JLibro($request));
     }
     
     public function JLibroCU(){
@@ -82,43 +100,33 @@ class C_Libros extends BaseController
         $request = $request->getPost();
         echo json_encode($this->M_Libros->JLibroCU($request));
     }
-    
-    // Fución de prueba
-    function VCapítulo($IDcapítulo = null){
-        $data = [
-            "title" => "Libro",
-            "IDcapítulo" => $IDcapítulo
-        ];
-        $data = ['data' => $data];
-        
-        echo view('libros/v_capítulo_leer', $data);
-        echo view('_main', $data);
-    }
-    
-    function VCapítuloCU($IDlibro = null, $IDcapítulo = null){
-        $data = $this->M_Libros->VCapítuloCU($IDlibro, $IDcapítulo);
-        $data = ['data' => $data];
-        
-        echo view('libros/v_capítulo_cu', $data);
-        echo view('_main', $data);
-    }
-    
-    function JCapítuloCU(){
+
+    public function JRevisarFavoritos(){
         $request = request();
         $request = $request->getPost();
-        // echo json_encode($request);
-        echo json_encode( $this->M_Libros->JCapítuloCU($request));
+        echo json_encode($this->M_Libros->JRevisarFavoritos($request));
     }
-    
-    function JCapítuloDetalles(){
+
+    public function JFavoritos(){
         $request = request();
         $request = $request->getPost();
-        echo json_encode( $this->M_Libros->JCapítuloDetalles($request));
+        echo json_encode($this->M_Libros->JFavoritos($request));
+    }
+
+    public function JFavoritosD(){
+        $request = request();
+        $request = $request->getPost();
+        $request['método'] = "D";
+        echo json_encode($this->M_Libros->JFavoritosCD($request));
+    }
+    public function JFavoritosC(){
+        $request = request();
+        $request = $request->getPost();
+        $request['método'] = "C";
+        echo json_encode($this->M_Libros->JFavoritosCD($request));
     }
     
-    function BuscarCapítulosPorLibro(){
-        $request = request();
-        echo json_encode( $this->M_Libros->BuscarCapítulos($request));
-    }
+    // FIN DE BACK END
+    
     
 }

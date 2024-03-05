@@ -1,4 +1,6 @@
-<?php function Contenido($data){ ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('container') ?>
 <div class="row">
     <div  class="col-12 text-center mb-5 mt-5">
         <h2 id="cap">
@@ -33,9 +35,9 @@
         <input type="range" class="form-range" id="progreso" value=0 min=1    >
     </div>
 </div>
-<?php }?>
+<?= $this->endSection() ?>
 
-<?php function Scripts($data){ ?>
+<?= $this->section('scripts') ?>
     <script src="<?= base_url("public/js/scripts.js");?>"></script>
     <script>    
         let texto = "Texto de ejemplo";
@@ -49,7 +51,7 @@
         $( document ).ready(function() {
             
             var capítuloDaraUTL = "<?=base_url('b/libro/cap/detalles')?>";
-            var capítuloDataArgs = {capítulo: <?= $data['IDcapítulo']?>, f:1};
+            var capítuloDataArgs = {capítulo: <?= $IDcapítulo?>, f:1};
             
             GetData(capítuloDaraUTL, capítuloDataArgs).then(function(data){
                 
@@ -133,4 +135,4 @@
         }
         
     </script>
-<?php }?>
+<?= $this->endSection() ?>

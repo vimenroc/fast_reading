@@ -1,18 +1,9 @@
 <?php
 
 namespace App\Controllers;
-include './vendor/autoload.php';
+
 class Home extends BaseController
 {
-    
-    private $templates;
-    
-    public function __construct() {
-        
-
-
-    }
-    
     public function index()
     {
 
@@ -20,15 +11,24 @@ class Home extends BaseController
         $data = [
             "title" => "Lectura Rápida",
         ];
+        $session = session();
+        
+        
+        if($session->get('usuario')){
+            $usuario = $session->get('usuario');
+            echo $usuario->username;
+            $data['botones'] = [
+                [
+                    'nombre' => 'Favoritos',
+                    'ícono' => 'star',
+                    'href' => base_url("usuario/$usuario->username/favoritos"),
+                ],
+            ];
+        }else{
+            $data['botones'] = null;
+        }
+        
 
-        $data = [
-            "title" => "Catálogo de Libros",
-        ];
-        $data = ['data' => $data];
-
-        echo view('pages/v_inicio', $data);
-        echo view('_main', $data);
+        return view('pages/v_inicio', $data);
     }
-    
-    
 }

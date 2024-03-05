@@ -1,9 +1,10 @@
+<?= $this->extend('layouts/main') ?>
 
-<?php function Contenido($data){ ?>
+<?= $this->section('container') ?>
 <div class="row">
     <div  class="col-12 text-center mb-5 mt-5">
         <h2 id="cap">
-            <?= $data['title']; ?>
+            <?= $title; ?>
         </h2>
     </div>
 </div>
@@ -25,9 +26,9 @@
 <div class="row mt-5 p-3" id="cat-libros">
 
 </div>
-<?php }?>
+<?= $this->endSection() ?>
 
-<?php function Scripts($data){?>
+<?= $this->section('scripts') ?>
 <script>
     $(document).ready(function(){
         
@@ -56,10 +57,8 @@
                 $("#cat-libros").html('');
                 if (data) {
                     data.forEach(element => {
-                        // con3 = `<button class="btn btn-outline-dark border-0 w-100 h-100"><i class="fa fa-book align-self-start"></i> ${element.título}</button>`;
-                        con2 = `<a href="<?= base_url('libro/'); ?>${element.libroID}" class="text-decoration-none text-dark cat-libro"><i class="fa fa-book align-self-start"></i> ${element.título}</a>`;
-                        con1 = `<div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-2 p-2">${con2}</div>`;
-                        $("#cat-libros").append(`${con1}`);
+                        let libro = ComponenteLibro('<?= base_url("libro/")?>'+element.libroID, element.libroTítulo, element.libroReseña, element.libroPortada);
+                        $("#cat-libros").append(libro);
                     });
                 }
                 
@@ -94,4 +93,4 @@
         });
     }
 </script>
-<?php }?>
+<?= $this->endSection() ?>
