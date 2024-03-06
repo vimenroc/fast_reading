@@ -104,9 +104,9 @@ class M_Libros extends Model
     
     function JLibroCU($data){
         $insert = [
-            'TÍTULO' => $data['título'],
-            'RESEÑA' => $data['reseña'],
-            'ID_IDIOMA' => $data['idioma']
+            'TÍTULO' => $data['libroTítulo'],
+            'RESEÑA' => $data['libroReseña'],
+            'ID_IDIOMA' => $data['libroIdioma']
         ];
         
         $builder = $this->db->table('fastreading_t_libros');
@@ -116,7 +116,7 @@ class M_Libros extends Model
                 $f = $builder->insert($insert);
                 break;
             case 'U':
-                $builder->where('ID', $data['libro']);
+                $builder->where('ID', $data['libroID']);
                 $f = $builder->update($insert);
                 break;
             default:break;

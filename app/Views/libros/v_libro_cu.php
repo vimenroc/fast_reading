@@ -57,32 +57,34 @@
             CargarIdiomas();
             
             if (libro) {
-                LibroData("<?= base_url('b/libro');?>",{IDlibro : libro}).then(data => {
-                    if (data) {
-                        $("title").text(`ℹ️: ${data.título}`);
-                        $("#cabecera").text(`Detalles del libro: ${data.título}`);
-                        $("#título").val(data.título);
-                        $("#reseña").val(data.reseña);
+                LibroData("<?= base_url('b/libro');?>",{IDlibro : libro}).then(respuesta => {
+                    if (respuesta.data) {
+                        $("title").text(`ℹ️: ${respuesta.data.libroTítulo}`);
+                        $("#cabecera").text(`Detalles del libro: ${respuesta.data.libroTítulo}`);
+                        $("#título").val(respuesta.data.libroTítulo);
+                        $("#reseña").val(respuesta.data.libroReseña);
                     }
                 });
             }else{
                 $("#cabecera").text(`Nuevo registro de libro`);
             }
             
-            
-                    
-            var url = "<?= base_url('b/libros/cu'); ?>";
             $("#libro-detalles").submit(function(e){
-                e.preventDefault();
-                // Get form
-                var form = $('#libro-detalles')[0];
 
+                e.preventDefault();
+
+                let detallesURL = "<?= base_url('b/libros/cu')?>";
                 // FormData object 
-                var formData = new FormData(form);
-                formData.append("libro", libro);
-                formData.append("método", método);
+                let detallesData = {
+                    libroTítulo : $("#título").val(),
+                    libroReseña : $("#reseña").val(),
+                    libroIdioma : $("#idioma").val(),
+                    // libroImagen : $("#imagen").val()
+                    método : método,
+                    libroID : libro
+                };
                 
-                Guardar(url, formData, $("#guardar"));
+                Guardar(detallesURL, detallesData, $("#guardar"));
             });
         });
         

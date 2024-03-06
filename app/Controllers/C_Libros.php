@@ -27,8 +27,7 @@ class C_Libros extends BaseController
     }
     
     public function VLibro($libroID = null){
-        $session = session();
-        $usuario = $session->get('usuario');
+        $usuario = $this->session->get('usuario');
         if ($usuario) {
             $usuarioID = $usuario->userID;
         }else{
@@ -45,8 +44,7 @@ class C_Libros extends BaseController
     }
     
     function VFavoritos(){
-        $session = session();
-        $usuario = $session->get('usuario');
+        $usuario = $this->session->get('usuario');
         if ($usuario) {
             $usuarioID = $usuario->userID;
         }else{
@@ -58,7 +56,6 @@ class C_Libros extends BaseController
             "title" => "Favoritos",
             "usuarioID" => $usuarioID,
         ];
-        // print_r($data['usuario']);
         return view('libros/v_favoritos', $data);
     }
     
@@ -80,8 +77,9 @@ class C_Libros extends BaseController
     }
 
     // FIN DE VISTAS
-    // BACK END
 
+
+    // BACK END
 
     public function JCatálogo(){
         $request = request();

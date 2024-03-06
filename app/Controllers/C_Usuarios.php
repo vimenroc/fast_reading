@@ -46,7 +46,6 @@ class C_Usuarios extends BaseController
 
 
     public function BRegistro(){
-        $session = session();
         $request = request();
         $request = $request->getPost();
         
@@ -57,8 +56,8 @@ class C_Usuarios extends BaseController
         $request['método'] = "C";
         
         return json_encode($this->m_Usuarios->BUsuarioCU($request));
-    
     }
+    
     public function BLogin(){
         helper(['form']);
         $rules = [

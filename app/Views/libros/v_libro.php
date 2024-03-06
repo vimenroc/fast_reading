@@ -24,8 +24,10 @@
         
     </div>
 
+    <?php 
+    if (isset($usuarioID)) { ?>
     <div class="row">
-    <div class="col-lg-8 col-md-8 col-12 m-auto">
+        <div class="col-lg-8 col-md-8 col-12 m-auto">
             <div class="row">
                 <div class="col-lg-2 col-12 text-center mb-3">
                     
@@ -36,6 +38,7 @@
             </div>
         </div>
     </div>
+    
 
     <div class="row">
         <div class="col-3"></div>
@@ -44,7 +47,8 @@
         </div>
         <div class="col-3"></div>
     </div>
-
+    <?php } ?>
+    
     <div class="row">
         <div class="col-lg-3 col-md-2 col-sm-12 col-1"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 col-10 ">
@@ -54,6 +58,7 @@
         </div>
         <div class="col-lg-3 col-md-2 col-sm-12 col-1"></div>
     </div>
+    
     <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -63,7 +68,9 @@
         let favoritosURL = "";
         let favoritosData = {
             libroID : <?= $libroID ?>,
-            usuarioID : <?= $usuarioID ?>,
+            <?php if (isset($usuarioID)) {
+                echo "usuarioID : $usuarioID";
+            } ?>
         };
 
         // A $( document ).ready() block.
@@ -71,8 +78,13 @@
             console.log();
             LibroData("<?= base_url('b/libro');?>",{IDlibro : libro}).then(response => {
                 if (response.data) {
+                    <?php if (isset($usuarioID)) { ?>
                     var edit = $("<a>").attr("href", `<?= base_url("libro/");?>${libro}/detalles`).html(" <i class='fas fa-edit'></i>").addClass("text-dark text-decoration-none");
+                    <?php }else{ ?>
+                    var edit = "";
+                    <?php } ?>
                     $("#título").html(response.data.libroTítulo).append(edit);
+                     
                     response.data.libroReseña = response.data.libroReseña.replace(/\n/g, "<br>");    
                     $("#reseña").html(response.data.libroReseña);
                     let portada = $("<img>").attr("src", response.data.libroPortada).addClass("img-fluid").css("max-height", "300px");
@@ -80,8 +92,14 @@
                 }
             });
             LibroCapítulos();
-            RevisarFavoritos();
-            ModificarFavorito();
+
+            <?php
+            // Funciones de js que solo deben ser llamadas si hay una sesión iniciada.
+            if (isset($usuarioID)) {
+                echo "RevisarFavoritos();";
+                echo "ModificarFavorito();";
+            } ?>
+            
         });
         
         function RevisarFavoritos(){
@@ -121,7 +139,11 @@
                         $("#caps").html(`<li class="list-group-item border-0 mb-3">Capítulos</li>`);
                         console.log(data);
                         data.forEach(element => {
+                            <?php if (isset($usuarioID)) { ?>
                             var detailsLink = `<a class="text-black" href="<?= base_url('libro/');?>${libro}/cap/${element.capítuloID}/detalles"><i class="fa fa-edit"></i></a>`;
+                            <?php }else{ ?>
+                            var detailsLink = "";
+                            <?php } ?>
                             $("#caps").append(`<li class="list-group-item border-0">${detailsLink} <a href="<?= base_url('libro/cap/');?>${element.capítuloID}" class="text-dark"><b></b> <i class="fas fa-book-open"></i> Capítulo ${element.capítuloNo} - ${element.título}</a></li>`);
                         });
                     }
